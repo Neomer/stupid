@@ -11,6 +11,7 @@
 #include <cryptopp/cryptlib.h>
 #include <cryptopp/osrng.h>
 #include <cryptopp/files.h>
+#include <cryptopp/hex.h>
 
 using namespace CryptoPP;
 
@@ -19,7 +20,7 @@ Account::Account(QObject *parent) : QObject(parent)
 	LOG_TRACE;
 }
 
-bool Account::load(QString password)
+bool Account::open(QString password)
 {
 	LOG_TRACE;
 }
@@ -33,8 +34,10 @@ void Account::create(QString password)
 	InvertibleRSAFunction params;
 	params.GenerateRandomWithKeySize(rng, 3072);
 	
-	RSA::PrivateKey privateKey(params);
-	RSA::PublicKey publicKey(params);
+	RSA::PrivateKey privateKey;
+	privateKey.GenerateRandomWithKeySize(rng, 3072);
+	RSA::PublicKey publicKey(privateKey);
+	
 	
 	ByteQueue queue;
 	privateKey.Save(queue);
@@ -45,16 +48,35 @@ void Account::create(QString password)
 		throw std::runtime_error("Keystore directory not exists!");
 	}
 	
-	FileSink file("/home/user/.stupid/keystore/private_rsa.key");
+	SHA256 sha;
+	byte digest[SHA256::DIGESTSIZE];
+	sha.CalculateDigest(digest, 
+						(const byte *)password.toUtf8().constData(), 
+						password.toUtf8().length());
+	HexEncoder encoder;
+	encoder.Put(digest, SHA256::DIGESTSIZE);
+	encoder.MessageEnd();
+	
+	std::string pwd;
+	word64 size = encoder.MaxRetrievable();
+	if(size)
+	{
+	    pwd.resize(size);		
+	    encoder.Get((byte*)pwd.data(), pwd.size());
+	}
+	;
+	
+	FileSink file(QString("/home/user/.stupid/keystore/" + QString::fromStdString(pwd) + "_private.key").toUtf8().constData());
     queue.CopyTo(file);
     file.MessageEnd();
 	
 	publicKey.Save(queue);
-	FileSink filepub("/home/user/.stupid/keystore/public_rsa.key");
-    queue.CopyTo(file);
+	FileSink filepub(QString("/home/user/.stupid/keystore/" + QString::fromStdString(pwd) + "_public.key").toUtf8().constData());
+    queue.CopyTo(filepub);
     filepub.MessageEnd();
 	
-	LOG_INFO << "Account successfully created!\nKeys has been written!\nPrivate key: /home/user/.stupid/keystore/private_rsa.key\nPublic key: /home/user/.stupid/keystore/public_rsa.key";
+	
+	LOG_INFO << "Account successfully created!\nKeys has been written!\nPrivate key: /home/user/.stupid/keystore/" + QString::fromStdString(pwd) + "_private.key\nPublic key: /home/user/.stupid/keystore/" + QString::fromStdString(pwd) + "_public.key";
 }
 
 bool Account::onCommand(QString command, QVariant data)

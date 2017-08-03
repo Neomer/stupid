@@ -4,7 +4,9 @@
 #include <QObject>
 #include <QTcpSocket>
 
-class Peer : public QObject
+#include <src/core/EventBroker.h>
+
+class Peer : public QObject, public EventBroker
 {
 	Q_OBJECT
 public:
@@ -15,6 +17,10 @@ private slots:
 	
 private:
 	QTcpSocket *_socket;
+	
+	// EventBroker interface
+protected:
+	bool onCommand(QString command, QVariant data);
 };
 
 #endif // PEER_H

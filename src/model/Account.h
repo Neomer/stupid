@@ -10,7 +10,7 @@ class Account : public QObject, public EventBroker
 public:
 	explicit Account(QObject *parent = 0);
 	
-	bool load(QString password);
+	bool open(QString password);
 	void create(QString password);
 	
 	// EventBroker interface
