@@ -13,7 +13,7 @@ ConsoleProc::ConsoleProc(QObject * parent) :
 
 ConsoleProc::~ConsoleProc()
 {
-	terminate();
+	//terminate();
 }
 
 void ConsoleProc::run()

@@ -53,7 +53,7 @@ QString EventBroker::parseMethod(QString data)
 	int bracket = data.indexOf('(');
 	if (bracket == -1)
 	{
-		throw std::runtime_error("Wrong format!");
+		return data;
 	}
 	
 	return data.mid(0, bracket).toLower();

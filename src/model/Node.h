@@ -7,19 +7,36 @@
 #include <QVector>
 
 #include <src/model/Peer.h>
+#include <src/core/EventBroker.h>
 
-class Node : public QTcpServer
+class Node : public QTcpServer, public EventBroker
 {
 	Q_OBJECT
 	
 public:
-	explicit Node(QObject *parent = 0);
+	static Node& instance()
+    {
+        static Node s;
+        return s;
+    }
 	
 private slots:
 	void applyConnection();
 	
 private:
+	Node();
+	~Node();
+	
+	Node(Node const&); 
+	Node& operator= (Node const&); 
+	
 	QVector<Peer *> _peers;
+	
+	// EventBroker interface
+protected:
+	bool onCommand(QString command, QVariant data);
 };
+
+typedef Node		singletonNode;
 
 #endif // NODE_H
