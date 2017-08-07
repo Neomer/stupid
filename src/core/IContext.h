@@ -38,6 +38,23 @@ public:
 	void addNode(QUrl node);
 	
 	QRegExp &getUrlValidator()  { return _urlValidator; }
+	QString getDefaultPath();
+	QString getDefaultDatabasePath();
+	
+	///
+	/// \brief lockMainFolder Locks main folder for single-access operations
+	///
+	void lockMainFolder();
+	///
+	/// \brief unlockMainFolder Unlocks main folder for single-access operations
+	///
+	void unlockMainFolder();
+	///
+	/// \brief startTime returns DateTime when program were started
+	/// \return 
+	///
+	QDateTime startTime();
+
 	
 private:
 	IContext(); 
@@ -52,6 +69,8 @@ private:
 	quint16 _nodePort;
 	QList<QUrl> _nodeList;
 	QRegExp _urlValidator;
+	QFile _lockFile;
+	QDateTime _startTime;
 };
 
 typedef IContext Context;

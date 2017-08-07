@@ -11,6 +11,7 @@
 #include <src/core/App.h>
 #include <src/model/Node.h>
 #include <src/viewmodel/NodeSpotter.h>
+#include <src/core/db/Database.h>
 
 using namespace std;
 using namespace CryptoPP;
@@ -19,6 +20,7 @@ int main(int argc, char *argv[])
 {
 	App a(argc, argv);
 	QString config = a.applicationDirPath().append("/config.conf");
+	QString dbpath;
 	
 	LOG_DEBUG << "Parse command-line arguments...";
 	
@@ -27,6 +29,10 @@ int main(int argc, char *argv[])
 		if (!strcmp(argv[i], "--config"))
 		{
 			config = argv[i];
+		}
+		else if (!strcmp(argv[i], "--config"))
+		{
+			dbpath = argv[i];
 		}
 		else 
 		{
@@ -39,12 +45,26 @@ int main(int argc, char *argv[])
 	LOG_DEBUG << "Loading progaram settings...";
 	try {
 		Context::instance().loadSettings(config);
+		Context::instance().lockMainFolder();
 	}
 	catch (std::exception &ex) {
 		LOG_DEBUG << "Exception:" << ex.what();
 		return -1;
 	}
 	LOG_DEBUG << "Settings ready";
+	
+	LOG_DEBUG << "Initializing database";
+	try {
+		Database::instance().open();
+		Block b(&a);
+		Database::instance().appendBlock(b);
+	}
+	catch (std::exception &ex) {
+		LOG_CRIT << "Exception:" << ex.what();
+		return -1;
+	}
+
+	LOG_DEBUG << "database ready";
 	
 	LOG_DEBUG << "Initializing node...";
 	try {

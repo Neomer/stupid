@@ -28,6 +28,7 @@ Node::Node() :
 	connect(this, SIGNAL(newConnection()), this, SLOT(applyConnection()));
 	
 	busConsole::instance().subscribe("net.income", this);
+	busConsole::instance().subscribe("net.newPeer", this);
 }
 
 Node::~Node()
@@ -50,6 +51,10 @@ bool Node::onCommand(QString command, QVariant data)
 			busConsole::instance().publish("net.send", "peers.share(\"{\"peers\": [\"127.0.0.1:25678\"]}\");");
 			return false;
 		}
+	}
+	else if (command == "net.newPeer")
+	{
+		LOG_TRACE << "Total peers:" << _peers.count();
 	}
 	return true;
 }

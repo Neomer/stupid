@@ -1,6 +1,7 @@
 #include "Peer.h"
 #include <src/core/Logger.h>
 #include <src/core/IBus.h>
+#include <QNetworkRequest>
 
 Peer::Peer(QTcpSocket *socket, QObject *parent) : 
 	QObject(parent),
@@ -8,6 +9,7 @@ Peer::Peer(QTcpSocket *socket, QObject *parent) :
 {
 	LOG_TRACE;
 	
+	connect(socket, SIGNAL(readyRead()), this, SLOT(readBytes()));
 	IBus::instance().subscribe("net.send", this);
 }
 

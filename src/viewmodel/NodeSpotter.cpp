@@ -2,9 +2,11 @@
 #include <src/core/Logger.h>
 #include <src/core/IBus.h>
 #include <src/core/IContext.h>
+#include <QNetworkRequest>
 
 NodeSpotter::NodeSpotter(QObject *parent) : 
-	QObject(parent)
+	QObject(parent),
+	_netAccess(new QNetworkAccessManager(parent))
 {
 	LOG_TRACE;
 	
@@ -14,6 +16,14 @@ NodeSpotter::NodeSpotter(QObject *parent) :
 void NodeSpotter::updatePeers()
 {
 	LOG_TRACE;
+
+	QList<QUrl>list = Context::instance().nodeList();
+	foreach(QUrl url, list)
+	{
+		url.setQuery("method=peers.share");
+		QNetworkRequest netRequest(url);
+		_netAccess->get(netRequest);
+	}
 }
 
 bool NodeSpotter::onCommand(QString command, QVariant data)

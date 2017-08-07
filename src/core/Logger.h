@@ -6,6 +6,8 @@
 #include <QDebug>
 #include <QThread>
 
+//TODO: сделать класс для логирования
+
 class Logger : public QObject
 {
 	Q_OBJECT

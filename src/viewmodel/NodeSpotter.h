@@ -2,6 +2,7 @@
 #define NODESPOTTER_H
 
 #include <QObject>
+#include <QNetworkAccessManager>
 
 #include <src/core/EventBroker.h>
 
@@ -26,6 +27,9 @@ public slots:
 	// EventBroker interface
 protected:
 	bool onCommand(QString command, QVariant data);
+	
+private:
+	QNetworkAccessManager *_netAccess;
 };
 
 #endif // NODESPOTTER_H

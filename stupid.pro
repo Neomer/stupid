@@ -20,7 +20,11 @@ SOURCES += main.cpp \
     src/viewmodel/AccountManager.cpp \
     src/model/Deal.cpp \
     src/model/Transaction.cpp \
-    src/viewmodel/NodeSpotter.cpp
+    src/viewmodel/NodeSpotter.cpp \
+    src/core/db/Database.cpp \
+    src/model/Block.cpp \
+    src/core/db/IDatabaseRecord.cpp \
+    src/core/db/DatabaseInfo.cpp
 
 HEADERS += \
     src/model/Node.h \
@@ -36,7 +40,11 @@ HEADERS += \
     src/model/Deal.h \
     src/model/Transaction.h \
     src/core/Singleton.h \
-    src/viewmodel/NodeSpotter.h
+    src/viewmodel/NodeSpotter.h \
+    src/core/db/Database.h \
+    src/model/Block.h \
+    src/core/db/IDatabaseRecord.h \
+    src/core/db/DatabaseInfo.h
 
 INCLUDEPATH += $$PWD
 
