@@ -6,7 +6,8 @@
 
 #include <src/core/Logger.h>
 
-IDatabaseRecord::IDatabaseRecord(QObject *parent) : QObject(parent)
+IDatabaseRecord::IDatabaseRecord(QObject *parent) : 
+	ISerializable(parent)
 {
 	LOG_TRACE;
 	
@@ -88,8 +89,6 @@ void IDatabaseRecord::fromDatabaseRecord(QByteArray data)
 		{
 			prop.write(this, value.toInt());
 		}
-		
-				
 	}
 	
 }

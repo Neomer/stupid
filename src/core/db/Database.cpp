@@ -146,9 +146,7 @@ void Database::appendBlock(Block &block)
 {
 	LOG_TRACE << block.hash();
 	
-	if (!_file.write(block.toDatabaseRecord()))
-	{
-		throw std::runtime_error("Not all data were written!");
-	}
+	_file.seek(0);
+	_file.write(ISerializable::toByteArray(block.serialize()));
 }
 

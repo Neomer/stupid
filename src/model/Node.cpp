@@ -21,7 +21,7 @@ Node::Node() :
 				 << ":" 
 				 << Context::instance().getNodePort();
 		
-		throw std::runtime_error("Can't bind node!");
+		//throw std::runtime_error("Can't bind node!");
 	}
 	
 	LOG_DEBUG << "Socket is ready for connections!";

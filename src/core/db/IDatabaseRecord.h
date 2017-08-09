@@ -3,7 +3,9 @@
 
 #include <QObject>
 
-class IDatabaseRecord : public QObject
+#include <src/core/ISerializable.h>
+
+class IDatabaseRecord : public ISerializable
 {
 	Q_OBJECT
 	
