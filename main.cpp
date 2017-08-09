@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 		Database::instance().open();
 		Block b;
 		LOG_INFO << QString(ISerializable::toByteArray(b.serialize()));
-		Database::instance().appendBlock(b);
+		//Database::instance().appendBlock(b);
 	}
 	catch (std::exception &ex) {
 		LOG_CRIT << "Exception:" << ex.what();

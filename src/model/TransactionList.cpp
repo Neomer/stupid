@@ -20,3 +20,4 @@ TransactionList &TransactionList::operator=(const TransactionList &)
 	return *this;
 }
 
+

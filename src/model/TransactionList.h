@@ -2,7 +2,9 @@
 #define TRANSACTIONLIST_H
 
 #include <QObject>
+
 #include <src/core/ISerializable.h>
+#include <src/model/Transaction.h>
 
 class TransactionList : public ISerializable
 {
@@ -11,11 +13,11 @@ class TransactionList : public ISerializable
 public:
 	explicit TransactionList(QObject *parent = 0);
 	TransactionList(const TransactionList &other);
-	
 	TransactionList &operator= (TransactionList const&); 
 	
-private:
 	
+private:
+	QList<Transaction *> _trList;
 };
 
 typedef TransactionList *	TransactionListPtr;

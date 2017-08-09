@@ -1,5 +1,6 @@
-#include <QJsonObject>
 #include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
 #include <QMetaObject>
 #include <QMetaProperty>
 #include <QMetaType>
@@ -24,7 +25,7 @@ QJsonObject ISerializable::serialize()
 	
 	LOG_INFO << "Serialize meta-object:\n" 
 			 << "Name:" << meta->className() << "\n"
-			 << "Super-class name:" << meta->superClass()->className();
+			 << "Super-classes:" << meta->superClass()->className();
 	
 	LOG_INFO << "Methods:";
 	for (int i = meta->methodOffset(); i < meta->methodCount(); ++i)
@@ -41,15 +42,36 @@ QJsonObject ISerializable::serialize()
 				 << "[ " << prop.typeName() << "] =" 
 				 << v;
 		
-		ISerializable *obj = qvariant_cast<ISerializable *>(v);
-		LOG_INFO << obj;
-		if (obj)
+		if (QString(prop.typeName()).indexOf("QList") == 0)
 		{
-			ret[ prop.name() ] = obj->serialize();
+			LOG_INFO << "List detected";
+			QVariantList vl = v.value<QVariantList>();
+			QJsonArray jsonArr;
+			foreach (QVariant val, vl)
+			{
+				ISerializable *obj = qvariant_cast<ISerializable *>(val);
+				if (obj)
+				{
+					jsonArr << obj->serialize();
+				}
+				else
+				{	
+					jsonArr << QJsonValue::fromVariant( val );
+				}
+				ret[ prop.name() ] = jsonArr;
+			}
 		}
 		else
-		{	
-			ret[ prop.name() ] = QJsonValue::fromVariant( prop.read(this) );
+		{
+			ISerializable *obj = qvariant_cast<ISerializable *>(v);
+			if (obj)
+			{
+				ret[ prop.name() ] = obj->serialize();
+			}
+			else
+			{	
+				ret[ prop.name() ] = QJsonValue::fromVariant( v );
+			}
 		}
 	}
 	

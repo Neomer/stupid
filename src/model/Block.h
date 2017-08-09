@@ -13,14 +13,14 @@ class Block : public ISerializable
 	Q_OBJECT
 	
 	Q_PROPERTY(QString hash READ hash)
-	Q_PROPERTY(TransactionList * transactions READ transactions)
+	Q_PROPERTY(QList<Transaction *> transactions READ transactions)
 	
 public:
 	explicit Block(Block *prev = 0, QObject *parent = 0);
 	
 	QString hash() { return _blockhash; }
 	Block *previous() { return _prev; }
-	TransactionList *transactions() { return _transactions; }
+	QList<Transaction *> transactions();
 	
 private:
 	QString _blockhash;

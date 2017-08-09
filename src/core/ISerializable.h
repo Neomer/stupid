@@ -17,4 +17,8 @@ public:
 	
 };
 
+typedef QList<int>		QIntList;
+
+Q_DECLARE_METATYPE(QIntList)
+
 #endif // ISERIALIZABLE_H
