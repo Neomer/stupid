@@ -103,8 +103,12 @@ void ISerializable::deserialize(QByteArray data)
 		throw std::runtime_error("Invalid json data!");
 	}
 	
-	QJsonObject obj = json.object();
+	if (!json.isObject())
+	{
+		throw std::runtime_error("JSON object expected!");
+	}
 	
+	QJsonObject obj = json.object();
 	
 	const QMetaObject *meta = this->metaObject();
 	

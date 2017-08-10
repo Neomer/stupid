@@ -60,6 +60,7 @@ int main(int argc, char *argv[])
 		for (int i = 0; i < 10; i++)
 		{
 			b.setBlockNumber(i);
+			b.setDateTime(QDateTime::currentDateTime());
 			Database::instance().appendBlock(b);
 		}
 	}

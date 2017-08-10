@@ -16,6 +16,7 @@ class Block : public ISerializable
 	Q_PROPERTY(QList<Transaction *> transactions READ transactions)
 	Q_PROPERTY(quint64 blockNumber READ blockNumber WRITE setBlockNumber)
 	Q_PROPERTY(QString prevBlock READ prevBlockHash)
+	Q_PROPERTY(QString dateTimeString READ dateTimeString WRITE setDateTimeString)
 	
 public:
 	Block(Block *prev = 0, QObject *parent = 0);
@@ -26,6 +27,11 @@ public:
 	quint64 blockNumber() { return _blockNumber; }
 	void setBlockNumber(quint64 value) { _blockNumber = value; } 
 	QString prevBlockHash() { return _prevBlockHash; } 
+	QDateTime dateTime() { return _dateTime; }
+	void setDateTime(QDateTime value) { _dateTime = value; }
+	
+	QString dateTimeString() { return _dateTime.toString("yyyy-MM-dd hh:mm:ss.zzz"); }
+	void setDateTimeString(QString value) { _dateTime = QDateTime::fromString(value, "yyyy-MM-dd hh:mm:ss.zzz"); }
 	
 private:
 	QString _blockHash;
@@ -33,6 +39,7 @@ private:
 	QString _prevBlockHash;
 	QList<Transaction *> _transactions;
 	quint64 _blockNumber;
+	QDateTime _dateTime;
 };
 
 #endif // BLOCK_H
