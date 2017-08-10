@@ -7,11 +7,11 @@
 #include <src/core/Logger.h>
 #include <src/core/IContext.h>
 
-#include <cryptopp/rsa.h>
-#include <cryptopp/cryptlib.h>
-#include <cryptopp/osrng.h>
-#include <cryptopp/files.h>
-#include <cryptopp/hex.h>
+#include <cryptopp-lib/rsa.h>
+#include <cryptopp-lib/cryptlib.h>
+#include <cryptopp-lib/osrng.h>
+#include <cryptopp-lib/files.h>
+#include <cryptopp-lib/hex.h>
 
 using namespace CryptoPP;
 
@@ -22,7 +22,10 @@ Account::Account(QObject *parent) : QObject(parent)
 
 bool Account::open(QString password)
 {
-	LOG_TRACE;
+	//TODO: cделать открытие аккаунта
+	LOG_TRACE << password; 
+	
+	return false;
 }
 
 void Account::create(QString password)
@@ -75,12 +78,13 @@ void Account::create(QString password)
     queue.CopyTo(filepub);
     filepub.MessageEnd();
 	
-	
 	LOG_INFO << "Account successfully created!\nKeys has been written!\nPrivate key: /home/user/.stupid/keystore/" + QString::fromStdString(pwd) + "_private.key\nPublic key: /home/user/.stupid/keystore/" + QString::fromStdString(pwd) + "_public.key";
 }
 
 bool Account::onCommand(QString command, QVariant data)
 {
 	LOG_TRACE << command << data;
+	
+	return true;
 }
 

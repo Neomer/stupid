@@ -10,6 +10,8 @@
 #include <QHostAddress>
 #include <QList>
 #include <QUrl>
+#include <QLockFile>
+
 
 #include <src/viewmodel/AccountManager.h>
 #include <src/core/ConsoleProc.h>
@@ -40,6 +42,8 @@ public:
 	QRegExp &getUrlValidator()  { return _urlValidator; }
 	QString getDefaultPath();
 	QString getDefaultDatabasePath();
+	QDir getDefaultDirectory();
+	QDir getDefaultDatabaseDirectory();
 	
 	///
 	/// \brief lockMainFolder Locks main folder for single-access operations
@@ -69,7 +73,7 @@ private:
 	quint16 _nodePort;
 	QList<QUrl> _nodeList;
 	QRegExp _urlValidator;
-	QFile _lockFile;
+	QLockFile *_lockFile;
 	QDateTime _startTime;
 };
 

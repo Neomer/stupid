@@ -56,8 +56,8 @@ int main(int argc, char *argv[])
 	LOG_DEBUG << "Initializing database";
 	try {
 		Database::instance().open();
-		Block b;
-		LOG_INFO << QString(ISerializable::toByteArray(b.serialize()));
+		//Block b;
+		//LOG_INFO << QString(ISerializable::toByteArray(b.serialize()));
 		//Database::instance().appendBlock(b);
 	}
 	catch (std::exception &ex) {

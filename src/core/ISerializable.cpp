@@ -6,7 +6,9 @@
 #include <QMetaType>
 
 #include "ISerializable.h"
+
 #include <src/core/Logger.h>
+#include <src/core/ICrypto.h>
 
 ISerializable::ISerializable(QObject *parent) : 
 	QObject(parent)
@@ -23,28 +25,28 @@ QJsonObject ISerializable::serialize()
 	const QMetaObject *meta = this->metaObject();
 	
 	
-	LOG_INFO << "Serialize meta-object:\n" 
-			 << "Name:" << meta->className() << "\n"
-			 << "Super-classes:" << meta->superClass()->className();
+//	LOG_INFO << "Serialize meta-object:\n" 
+//			 << "Name:" << meta->className() << "\n"
+//			 << "Super-classes:" << meta->superClass()->className();
 	
-	LOG_INFO << "Methods:";
-	for (int i = meta->methodOffset(); i < meta->methodCount(); ++i)
-	{	
-		QMetaMethod prop = meta->method(i);
-		LOG_INFO << QString(prop.name());
-	}		
-	LOG_INFO << "Properties:";
+//	LOG_INFO << "Methods:";
+//	for (int i = meta->methodOffset(); i < meta->methodCount(); ++i)
+//	{	
+//		QMetaMethod prop = meta->method(i);
+//		LOG_INFO << QString(prop.name());
+//	}		
+//	LOG_INFO << "Properties:";
 	for (int i = meta->propertyOffset(); i < meta->propertyCount(); ++i)
 	{
 		QMetaProperty prop = meta->property(i);
 		QVariant v = prop.read(this);
-		LOG_INFO << "Property" << prop.name()
-				 << "[ " << prop.typeName() << "] =" 
-				 << v;
+//		LOG_INFO << "Property" << prop.name()
+//				 << "[ " << prop.typeName() << "] =" 
+//				 << v;
 		
 		if (QString(prop.typeName()).indexOf("QList") == 0)
 		{
-			LOG_INFO << "List detected";
+//			LOG_INFO << "List detected";
 			QVariantList vl = v.value<QVariantList>();
 			QJsonArray jsonArr;
 			foreach (QVariant val, vl)
@@ -52,7 +54,9 @@ QJsonObject ISerializable::serialize()
 				ISerializable *obj = qvariant_cast<ISerializable *>(val);
 				if (obj)
 				{
-					jsonArr << obj->serialize();
+					QJsonObject jObj = obj->serialize();
+					jObj["hash"] = Crypto::instance().hex(Crypto::instance().hashBlake2b(jObj));
+					jsonArr << jObj;
 				}
 				else
 				{	
@@ -66,7 +70,9 @@ QJsonObject ISerializable::serialize()
 			ISerializable *obj = qvariant_cast<ISerializable *>(v);
 			if (obj)
 			{
-				ret[ prop.name() ] = obj->serialize();
+				QJsonObject jObj = obj->serialize();
+				jObj["hash"] = Crypto::instance().hex(Crypto::instance().hashBlake2b(jObj));
+				ret[ prop.name() ] = jObj;
 			}
 			else
 			{	
@@ -74,6 +80,7 @@ QJsonObject ISerializable::serialize()
 			}
 		}
 	}
+	ret["hash"] = Crypto::instance().hex(Crypto::instance().hashBlake2b(ret));
 	
 	return ret;
 	

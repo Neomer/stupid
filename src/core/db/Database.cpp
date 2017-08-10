@@ -4,6 +4,7 @@
 #include <src/core/IBus.h>
 #include <src/core/IContext.h>
 
+
 Database::Database()
 {
 	LOG_TRACE;
@@ -62,7 +63,7 @@ bool Database::open(QString path)
 	_dbi.fromDatabaseRecord(_finfo.readAll());
 	
 	_file.setFileName(dir.absoluteFilePath(_dbi.currentFile()));
-	if (!_file.open(QIODevice::ReadWrite))
+	if (!_file.open(QIODevice::ReadWrite | QIODevice::Unbuffered))
 	{
 		throw std::runtime_error("Database file is busy by other process!");
 	}
@@ -148,5 +149,16 @@ void Database::appendBlock(Block &block)
 	
 	_file.seek(0);
 	_file.write(ISerializable::toByteArray(block.serialize()));
+	
+}
+
+std::shared_ptr<Block> Database::findBlock(QString hash)
+{
+	LOG_TRACE << hash;
+	
+	std::shared_ptr<Block> ret(new Block());
+	ret->deserialize(QByteArray());
+	
+	return ret;
 }
 

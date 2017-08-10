@@ -4,6 +4,7 @@
 
 #include <src/core/Logger.h>
 
+
 IContext::IContext() 
 {  
 	_startTime = QDateTime::currentDateTime();
@@ -24,7 +25,7 @@ IContext::IContext()
 		}
 	}
 	
-	_lockFile.setFileName(dir.absoluteFilePath(".lock"));
+	_lockFile = 0;
 	
 	// TODO: Перенести эти костыли на реальное 
 	// получение данных из конфига
@@ -69,8 +70,6 @@ void IContext::addNode(QUrl node)
 
 QString IContext::getDefaultPath()
 {
-	LOG_TRACE;
-	
 	
 #ifdef __linux
 	QString appDataPath = QDir::homePath();
@@ -87,27 +86,40 @@ QString IContext::getDefaultPath()
 
 QString IContext::getDefaultDatabasePath()
 {
-	LOG_TRACE;
-	
 	return getDefaultPath().append("/db");
+}
+
+QDir IContext::getDefaultDirectory()
+{
+	return QDir(getDefaultPath());
+}
+
+QDir IContext::getDefaultDatabaseDirectory()
+{
+	return QDir(getDefaultDatabasePath());
 }
 
 void IContext::lockMainFolder()
 {
 	LOG_TRACE;
 	
-	//TODO: не работает!
-	if (!_lockFile.open(QIODevice::WriteOnly))
+	if (_lockFile)
 	{
-		throw std::runtime_error("Locking of main directory failed!");
+		throw std::runtime_error("Mutiple block operation!");
 	}
-	_lockFile.write(QDateTime::currentDateTime().toString().toUtf8());
+	
+	_lockFile = new QLockFile(getDefaultDirectory().absoluteFilePath(".lock"));
+	_lockFile->setStaleLockTime(0);
+	if (!_lockFile->tryLock(2000))
+	{
+		throw std::runtime_error("Blocking operation failed. Looks like process already running!");
+	}
 }
 
 void IContext::unlockMainFolder()
 {
 	LOG_TRACE;
-	_lockFile.close();
+	_lockFile->unlock();
 }
 
 QDateTime IContext::startTime()

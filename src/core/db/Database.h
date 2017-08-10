@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QFile>
+#include <memory>
 
 #include <src/model/Block.h>
 #include <src/core/EventBroker.h>
@@ -24,6 +25,7 @@ public:
 	void close();
 	
 	void appendBlock(Block &block);
+	std::shared_ptr<Block> findBlock(QString hash);
 	
 private:
 	Database();

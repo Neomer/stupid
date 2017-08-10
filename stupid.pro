@@ -27,7 +27,9 @@ SOURCES += main.cpp \
     src/core/db/DatabaseInfo.cpp \
     src/core/ICrypto.cpp \
     src/core/ISerializable.cpp \
-    src/model/TransactionList.cpp
+    src/model/TransactionList.cpp \
+    src/core/db/IDatabaseIndex.cpp \
+    src/core/db/DatabaseBlockIndex.cpp
 
 HEADERS += \
     src/model/Node.h \
@@ -50,14 +52,18 @@ HEADERS += \
     src/core/db/DatabaseInfo.h \
     src/core/ICrypto.h \
     src/core/ISerializable.h \
-    src/model/TransactionList.h
-
-#CryptoPP libs
-LIBS += -L/home/user/Документы/QT/cryptopp-lib/cryptopp-lib -lcryptopp
-INCLUDEPATH += /home/user/Документы/QT/cryptopp-lib
+    src/model/TransactionList.h \
+    src/core/db/IDatabaseIndex.h \
+    src/core/db/DatabaseBlockIndex.h
 
 INCLUDEPATH += $$PWD
 
 UI_DIR = tmp
 OBJECTS_DIR = tmp
 MOC_DIR = tmp
+
+
+#[CryptoPP libs]
+LIBS += -L/usr/lib/cryptopp-lib/cryptopp-lib -lcryptopp
+INCLUDEPATH += /usr/lib/cryptopp-lib
+#[/CryptopPP]
