@@ -173,13 +173,21 @@ void Database::appendBlock(Block &block)
 	}
 }
 
-std::shared_ptr<Block> Database::findBlock(QString hash)
+bool Database::findBlock(QString hash, Block* ret)
 {
 	LOG_TRACE << hash;
 	
-	std::shared_ptr<Block> ret(new Block());
-	ret->deserialize(QByteArray());
+	DatabaseBlockIndex::BlockIndexRecord index;
+	if (_blockIndex->find(hash, &index))
+	{
+		if (ret)
+		{
+			_file.seek(index._offset);
+			ret->deserialize(_file.read(index._length));
+		}
+		return true;
+	}
 	
-	return ret;
+	return false;
 }
 

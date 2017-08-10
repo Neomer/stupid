@@ -116,8 +116,6 @@ void ISerializable::deserialize(QByteArray data)
 	{
 		QMetaProperty prop = meta->property(i);
 		
-		//LOG_DEBUG << prop.name() << "[" << prop.typeName() << "]";
-		
 		QJsonValue value;
 		if (obj.contains(prop.name()))
 		{

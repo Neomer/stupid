@@ -7,14 +7,15 @@ DatabaseBlockIndex::DatabaseBlockIndex(QObject *parent) :
 	LOG_TRACE;
 }
 
-bool DatabaseBlockIndex::find(QString hash, quint64 *ret)
+bool DatabaseBlockIndex::find(QString hash, BlockIndexRecord *ret)
 {
+	LOG_TRACE << hash;
 	return find(QByteArray::fromHex(hash.toUtf8()), ret);
 }
 
-bool DatabaseBlockIndex::find(QByteArray hash, quint64 *ret)
+bool DatabaseBlockIndex::find(QByteArray hash, BlockIndexRecord *ret)
 {
-	LOG_TRACE << hash;
+	LOG_TRACE << hash.count() << "byte(s)";
 
 	//TODO: сделать бинарный поиск
 	
@@ -30,11 +31,11 @@ bool DatabaseBlockIndex::find(QByteArray hash, quint64 *ret)
 		if (!memcmp(rec._hash, hash.constData(), BLOCK_HASH_SIZE))
 		{
 			LOG_DEBUG << "Block was found!" 
-					  << "Hash:" << hash
-					  << "Offset:" << rec._offset;
+					  << "Offset:" << rec._offset
+					  << "Size:" << rec._length;
 			if (ret)
 			{
-				*ret = rec._offset;
+				*ret = rec;
 			}
 			return true;
 		}

@@ -12,26 +12,36 @@ class Block : public ISerializable
 {
 	Q_OBJECT
 	
-	Q_PROPERTY(QString hash READ hash)
-	Q_PROPERTY(QList<Transaction *> transactions READ transactions)
+	Q_PROPERTY(QString hash READ hash WRITE setHash)
+	Q_PROPERTY(QList<Transaction *> transactions READ transactions WRITE setTransactions)
 	Q_PROPERTY(quint64 blockNumber READ blockNumber WRITE setBlockNumber)
-	Q_PROPERTY(QString prevBlock READ prevBlockHash)
+	Q_PROPERTY(QString prevBlock READ prevBlockHash WRITE setPrevBlockHash)
 	Q_PROPERTY(QString dateTimeString READ dateTimeString WRITE setDateTimeString)
 	
 public:
 	Block(Block *prev = 0, QObject *parent = 0);
 	
 	QString hash() { return _blockHash; }
+	void setHash(QString value) { _blockHash = value; }
+	
 	Block *previous() { return _prev; }
+	
 	QList<Transaction *> transactions() { return _transactions; }
+	void setTransactions(QList<Transaction *> value) { _transactions = value; }
+	
 	quint64 blockNumber() { return _blockNumber; }
 	void setBlockNumber(quint64 value) { _blockNumber = value; } 
+
 	QString prevBlockHash() { return _prevBlockHash; } 
+	void setPrevBlockHash(QString value) { _prevBlockHash = value; }
+	
 	QDateTime dateTime() { return _dateTime; }
 	void setDateTime(QDateTime value) { _dateTime = value; }
 	
 	QString dateTimeString() { return _dateTime.toString("yyyy-MM-dd hh:mm:ss.zzz"); }
 	void setDateTimeString(QString value) { _dateTime = QDateTime::fromString(value, "yyyy-MM-dd hh:mm:ss.zzz"); }
+	
+	void printBlockInfo();
 	
 private:
 	QString _blockHash;

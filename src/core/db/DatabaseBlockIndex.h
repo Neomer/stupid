@@ -5,11 +5,19 @@
 
 #define BLOCK_HASH_SIZE			64
 
+
+
 class DatabaseBlockIndex : public IDatabaseIndex
 {
 	Q_OBJECT
 	
 public:
+	struct BlockIndexRecord {
+		quint64 _offset;
+		quint64 _length;
+		char _hash[BLOCK_HASH_SIZE];
+	};
+
 	DatabaseBlockIndex(QObject *parent = 0);
 	
 	///
@@ -19,16 +27,12 @@ public:
 	/// \param ret offset in bytes of block-record in database file
 	/// \return TRUE if record was found, otherwise false
 	///
-	bool find(QString hash, quint64 *ret = 0);
-	bool find(QByteArray hash, quint64 *ret = 0);
+	bool find(QString hash, BlockIndexRecord *ret = 0);
+	bool find(QByteArray hash, BlockIndexRecord *ret = 0);
 	bool writeBlock(quint64 offset, quint64 length, QString hash);
 
+	
 private:
-	struct BlockIndexRecord {
-		quint64 _offset;
-		quint64 _length;
-		char _hash[BLOCK_HASH_SIZE];
-	};
 	
 	// IDatabaseIndex interface
 protected:

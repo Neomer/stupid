@@ -56,12 +56,34 @@ int main(int argc, char *argv[])
 	LOG_DEBUG << "Initializing database";
 	try {
 		Database::instance().open();
-		Block b;
-		for (int i = 0; i < 10; i++)
+//		Block b;
+//		for (int i = 0; i < 10; i++)
+//		{
+//			b.setBlockNumber(i);
+//			b.setDateTime(QDateTime::currentDateTime());
+//			Database::instance().appendBlock(b);
+//		}
+		
+//		Block b;
+//		QList<Transaction *> list;
+//		Transaction t(&b);
+//		Deal d(&t);
+//		d.setSender("neomer");
+//		d.setRecipient("musor");
+//		d.setAmount(4.56);
+//		t.addDeal(&d);
+//		list << &t;
+//		b.setTransactions(list);
+//		Database::instance().appendBlock(b);
+				
+		Block block;
+		if (Database::instance().findBlock("503b1a693c985e961b4f09ee357d984756003aaf73407c928774b1e603e06932a46c2c778263cf1f28555f7ea9580e3a73cae407d18d73821aed10f0bfc0fd62", &block))
 		{
-			b.setBlockNumber(i);
-			b.setDateTime(QDateTime::currentDateTime());
-			Database::instance().appendBlock(b);
+			block.printBlockInfo();
+		}
+		else
+		{
+			LOG_INFO << "Block not found!";
 		}
 	}
 	catch (std::exception &ex) {

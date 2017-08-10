@@ -26,7 +26,7 @@ public:
 	void close();
 	
 	void appendBlock(Block &block);
-	std::shared_ptr<Block> findBlock(QString hash);
+	bool findBlock(QString hash, Block *ret);
 	
 private:
 	Database();
