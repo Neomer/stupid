@@ -27,6 +27,8 @@ IContext::IContext()
 	
 	_lockFile = 0;
 	
+	//_blockIndex = new DatabaseBlockIndex(this);
+	
 	// TODO: Перенести эти костыли на реальное 
 	// получение данных из конфига
 	_nodeHostAddress = QHostAddress::Any;

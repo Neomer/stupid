@@ -9,6 +9,7 @@ Database::Database()
 {
 	LOG_TRACE;
 	
+	_blockIndex = new DatabaseBlockIndex();
 	busConsole::instance().subscribe("system.exit", this);
 }
 
@@ -68,6 +69,7 @@ bool Database::open(QString path)
 		throw std::runtime_error("Database file is busy by other process!");
 	}
 	
+	_blockIndex->openFile(Context::instance().getDefaultDatabaseDirectory().absoluteFilePath(".index"));
 	
 	return true;
 }
@@ -99,7 +101,7 @@ bool Database::create(QString path)
 		throw std::runtime_error("Database system information file is missing!");
 	}
 	
-	_dbi.setPreallocatedBytes(1000);
+	_dbi.setPreallocatedBytes(0);
 	_dbi.setCurrentFile("db.001");
 	
 	_file.setFileName(dir.absoluteFilePath(_dbi.currentFile()));
@@ -107,7 +109,7 @@ bool Database::create(QString path)
 	{
 		throw std::runtime_error("Database file is busy by other process!");
 	}
-	_file.resize(1000);
+	_file.resize(0);
 	_file.close();
 
 	if (!_finfo.write(_dbi.toDatabaseRecord()))
@@ -115,6 +117,14 @@ bool Database::create(QString path)
 		throw std::runtime_error("Not all data were written!");
 	}
 
+	_file.setFileName(Context::instance().getDefaultDatabaseDirectory().absoluteFilePath(".index"));
+	if (!_file.open(QIODevice::ReadWrite))
+	{
+		throw std::runtime_error("Database file is busy by other process!");
+	}
+	_file.close();
+	
+	
 	return true;
 }
 
@@ -147,9 +157,20 @@ void Database::appendBlock(Block &block)
 {
 	LOG_TRACE << block.hash();
 	
-	_file.seek(0);
-	_file.write(ISerializable::toByteArray(block.serialize()));
-	
+	//TODO: сделать заполнение хэша в модели
+	QJsonObject jObj = block.serialize();
+	QByteArray baObj = ISerializable::toByteArray(jObj);
+
+	if (_blockIndex->writeBlock(_file.size(), baObj.size(), jObj["hash"].toString()))
+	{
+		_file.seek(_file.size());
+		_file.write(baObj);
+	}
+	else
+	{
+		LOG_CRIT << "Block already exists!";
+		return;
+	}
 }
 
 std::shared_ptr<Block> Database::findBlock(QString hash)

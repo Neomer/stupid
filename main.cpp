@@ -56,9 +56,12 @@ int main(int argc, char *argv[])
 	LOG_DEBUG << "Initializing database";
 	try {
 		Database::instance().open();
-		//Block b;
-		//LOG_INFO << QString(ISerializable::toByteArray(b.serialize()));
-		//Database::instance().appendBlock(b);
+		Block b;
+		for (int i = 0; i < 10; i++)
+		{
+			b.setBlockNumber(i);
+			Database::instance().appendBlock(b);
+		}
 	}
 	catch (std::exception &ex) {
 		LOG_CRIT << "Exception:" << ex.what();

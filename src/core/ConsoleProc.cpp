@@ -39,5 +39,7 @@ bool ConsoleProc::onCommand(QString command, QVariant data)
 	{
 		terminate();
 	}
+	
+	return true;
 }
 

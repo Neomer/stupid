@@ -15,6 +15,7 @@
 
 #include <src/viewmodel/AccountManager.h>
 #include <src/core/ConsoleProc.h>
+//#include <src/core/db/DatabaseBlockIndex.h>
 
 ///
 /// \brief The IContext class Application settings and global variables
@@ -33,6 +34,7 @@ public:
 	
 	AccountManager * accountManager() const { return _accMgr; }
 	ConsoleProc * consoleProcessor() const { return _procConsole; }
+	//DatabaseBlockIndex *blockIndex() const { return _blockIndex; }
 	
 	QHostAddress getNodeHostAddress() { return _nodeHostAddress; }
 	quint16 getNodePort() { return _nodePort; }
@@ -75,6 +77,7 @@ private:
 	QRegExp _urlValidator;
 	QLockFile *_lockFile;
 	QDateTime _startTime;
+	//DatabaseBlockIndex *_blockIndex;
 };
 
 typedef IContext Context;

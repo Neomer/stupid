@@ -15,6 +15,7 @@ class Block : public ISerializable
 	Q_PROPERTY(QString hash READ hash)
 	Q_PROPERTY(QList<Transaction *> transactions READ transactions)
 	Q_PROPERTY(quint64 blockNumber READ blockNumber WRITE setBlockNumber)
+	Q_PROPERTY(QString prevBlock READ prevBlockHash)
 	
 public:
 	Block(Block *prev = 0, QObject *parent = 0);
@@ -24,10 +25,12 @@ public:
 	QList<Transaction *> transactions() { return _transactions; }
 	quint64 blockNumber() { return _blockNumber; }
 	void setBlockNumber(quint64 value) { _blockNumber = value; } 
+	QString prevBlockHash() { return _prevBlockHash; } 
 	
 private:
 	QString _blockHash;
 	Block *_prev;
+	QString _prevBlockHash;
 	QList<Transaction *> _transactions;
 	quint64 _blockNumber;
 };

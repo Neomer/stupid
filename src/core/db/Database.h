@@ -8,6 +8,7 @@
 #include <src/model/Block.h>
 #include <src/core/EventBroker.h>
 #include <src/core/db/DatabaseInfo.h>
+#include <src/core/db/DatabaseBlockIndex.h>
 
 class Database : public EventBroker
 {
@@ -38,6 +39,7 @@ private:
 	QFile _finfo;
 	
 	DatabaseInfo _dbi;
+	DatabaseBlockIndex *_blockIndex;
 	
 	// EventBroker interface
 protected:

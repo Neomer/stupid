@@ -18,7 +18,7 @@ void IDatabaseIndex::openFile(QString filename)
 		throw std::runtime_error("File not found!");
 	}
 	
-	if (!_device.open(QIODevice::ReadWrite))
+	if (!_device.open(QIODevice::ReadWrite | QIODevice::Unbuffered))
 	{
 		throw std::runtime_error("File is busy!");
 	}
@@ -37,37 +37,41 @@ bool IDatabaseIndex::isEmpty()
 
 void IDatabaseIndex::begin()
 {
-	LOG_TRACE;
+	//LOG_TRACE;
 	_device.seek(0);
 }
 
 void IDatabaseIndex::end()
 {
-	LOG_TRACE;
+	//LOG_TRACE;
 	_device.seek(_device.size());
 }
 
 bool IDatabaseIndex::next()
 {
-	LOG_TRACE;
+	//LOG_TRACE;
+	if (_device.pos() + blockLength() > _device.size())
+	{
+		return false;
+	}
 	return _device.seek(_device.pos() + blockLength());
 }
 
 bool IDatabaseIndex::prev()
 {
-	LOG_TRACE;
+	//LOG_TRACE;
 	return _device.seek(_device.pos() - blockLength());
 }
 
 void IDatabaseIndex::readCurrentBlock(void *buffer)
 {
-	LOG_TRACE;
+	//LOG_TRACE;
 	_device.read((char *)buffer, blockLength());
 }
 
 void IDatabaseIndex::writeBlock(void *block)
 {
-	LOG_TRACE;
+	//LOG_TRACE;
 	_device.write((const char *)block, blockLength());
 }
 

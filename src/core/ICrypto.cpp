@@ -47,19 +47,39 @@ QString ICrypto::hex(const QByteArray &data)
 {
 	LOG_TRACE << data.count();
 	
-	HexEncoder encoder;
-	encoder.Put((const byte*)data.constData(), data.count());
-	encoder.MessageEnd();
+//	HexEncoder encoder;
+//	encoder.Put((const byte*)data.constData(), data.count());
+//	encoder.MessageEnd();
 	
-	std::string dig;
-	word64 size = encoder.MaxRetrievable();
-	if(size)
-	{
-	    dig.resize(size);		
-	    encoder.Get((byte*)dig.data(), dig.size());
-	}
+//	std::string dig;
+//	word64 size = encoder.MaxRetrievable();
+//	if(size)
+//	{
+//	    dig.resize(size);		
+//	    encoder.Get((byte*)dig.data(), dig.size());
+//	}
+
+//	return QString::fromStdString(dig);
+	return data.toHex();
+}
+
+QByteArray ICrypto::fromHex(const QString &data)
+{
+	LOG_TRACE << data;
+
+//	HexDecoder encoder;
+//	encoder.Put((const byte*)data.constData(), data.count());
+//	encoder.MessageEnd();
 	
-	return QString::fromStdString(dig);
+//	std::string dig;
+//	word64 size = encoder.MaxRetrievable();
+//	if(size)
+//	{
+//	    dig.resize(size);		
+//	    encoder.Get((byte*)dig.data(), dig.size());
+//	}
+	
+	return QByteArray::fromHex(data.toUtf8());
 }
 
 quint16 ICrypto::blockHashSize()

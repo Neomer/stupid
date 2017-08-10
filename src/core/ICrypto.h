@@ -7,6 +7,7 @@
 #include <cryptopp-lib/blake2.h>
 #include <cryptopp-lib/sha.h>
 
+#define BLOCK_HASH_SIZE		64
 
 class ICrypto
 {
@@ -24,6 +25,7 @@ public:
 	QByteArray hashSHA(const QJsonObject &data);
 
 	QString hex(const QByteArray &data);
+	QByteArray fromHex(const QString &data);
 	
 	quint16 blockHashSize();
 	
