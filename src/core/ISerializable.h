@@ -15,6 +15,10 @@ public:
 	
 	static QByteArray toByteArray(const QJsonObject &object);
 	
+private:
+	QObject *fromJson(const QMetaObject *meta, QByteArray& data);
+	QObject *fromJson(const QMetaObject* meta, QJsonObject& jsonObject, QObject *object = 0);
+	QVariant jsonValueToProperty(QObject* object, QMetaProperty& property, QJsonValue value);
 };
 
 typedef QList<int>		QIntList;

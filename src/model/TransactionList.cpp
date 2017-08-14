@@ -9,7 +9,8 @@ TransactionList::TransactionList(QObject *parent) :
 }
 
 TransactionList::TransactionList(const TransactionList &other) :
-	ISerializable(other.parent())
+	ISerializable(other.parent()),
+	QList<Transaction *>()
 {
 	LOG_TRACE;
 }
@@ -20,4 +21,7 @@ TransactionList &TransactionList::operator=(const TransactionList &)
 	return *this;
 }
 
-
+void TransactionList::append(Transaction *tr)
+{
+	QList<Transaction *>::append(tr);
+}

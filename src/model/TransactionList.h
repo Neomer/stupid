@@ -6,7 +6,7 @@
 #include <src/core/ISerializable.h>
 #include <src/model/Transaction.h>
 
-class TransactionList : public ISerializable
+class TransactionList : public ISerializable, private QList<Transaction *>
 {
 	Q_OBJECT
 	
@@ -15,6 +15,7 @@ public:
 	TransactionList(const TransactionList &other);
 	TransactionList &operator= (TransactionList const&); 
 	
+	void append(Transaction * tr);
 	
 private:
 	QList<Transaction *> _trList;

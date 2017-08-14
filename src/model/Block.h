@@ -17,9 +17,10 @@ class Block : public ISerializable
 	Q_PROPERTY(quint64 blockNumber READ blockNumber WRITE setBlockNumber)
 	Q_PROPERTY(QString prevBlock READ prevBlockHash WRITE setPrevBlockHash)
 	Q_PROPERTY(QString dateTimeString READ dateTimeString WRITE setDateTimeString)
+	Q_PROPERTY(Transaction *tt READ tt WRITE setTT)
 	
 public:
-	Block(Block *prev = 0, QObject *parent = 0);
+	Q_INVOKABLE Block(Block *prev = 0, QObject *parent = 0);
 	
 	QString hash() { return _blockHash; }
 	void setHash(QString value) { _blockHash = value; }
@@ -43,6 +44,17 @@ public:
 	
 	void printBlockInfo();
 	
+	Transaction * tt() const
+	{
+		return m_tt;
+	}
+	
+public slots:
+	void setTT(Transaction * tt)
+	{
+		m_tt = tt;
+	}
+	
 private:
 	QString _blockHash;
 	Block *_prev;
@@ -50,6 +62,10 @@ private:
 	QList<Transaction *> _transactions;
 	quint64 _blockNumber;
 	QDateTime _dateTime;
+	Transaction * m_tt;
 };
+
+typedef QList<Transaction *>		TransList;
+Q_DECLARE_METATYPE(TransList)
 
 #endif // BLOCK_H

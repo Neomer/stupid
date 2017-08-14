@@ -65,19 +65,20 @@ int main(int argc, char *argv[])
 //		}
 		
 //		Block b;
+//		b.setTT(new Transaction());
 //		QList<Transaction *> list;
 //		Transaction t(&b);
 //		Deal d(&t);
 //		d.setSender("neomer");
 //		d.setRecipient("musor");
-//		d.setAmount(4.56);
+//		d.setAmount(4.26);
 //		t.addDeal(&d);
-//		list << &t;
+//		list.append(&t);
 //		b.setTransactions(list);
 //		Database::instance().appendBlock(b);
 				
 		Block block;
-		if (Database::instance().findBlock("503b1a693c985e961b4f09ee357d984756003aaf73407c928774b1e603e06932a46c2c778263cf1f28555f7ea9580e3a73cae407d18d73821aed10f0bfc0fd62", &block))
+		if (Database::instance().findBlock("cb8b27eb8e633b727e446ff6a7808700afd46f1f4c7a9553bd911f2da3abe022fb6f58b8ab544169b24463d67c8d2b6ef06f8e2804e9a9fa8567611e4bfefcab", &block))
 		{
 			block.printBlockInfo();
 		}

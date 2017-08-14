@@ -1,6 +1,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QJsonParseError>
 #include <QMetaObject>
 #include <QMetaProperty>
 #include <QMetaType>
@@ -56,6 +57,7 @@ QJsonObject ISerializable::serialize()
 				{
 					QJsonObject jObj = obj->serialize();
 					jObj["hash"] = Crypto::instance().hex(Crypto::instance().hashBlake2b(jObj));
+					jObj["classname"] = obj->metaObject()->className();
 					jsonArr << jObj;
 				}
 				else
@@ -72,6 +74,7 @@ QJsonObject ISerializable::serialize()
 			{
 				QJsonObject jObj = obj->serialize();
 				jObj["hash"] = Crypto::instance().hex(Crypto::instance().hashBlake2b(jObj));
+				jObj["classname"] = obj->metaObject()->className();
 				ret[ prop.name() ] = jObj;
 			}
 			else
@@ -81,6 +84,7 @@ QJsonObject ISerializable::serialize()
 		}
 	}
 	ret["hash"] = Crypto::instance().hex(Crypto::instance().hashBlake2b(ret));
+	ret["classname"] = this->metaObject()->className();
 	
 	return ret;
 	
@@ -96,61 +100,96 @@ QJsonObject ISerializable::serialize()
 void ISerializable::deserialize(QByteArray data)
 {
 	LOG_TRACE << data.count() << "byte(s)";
-	
-	QJsonDocument json = QJsonDocument::fromJson(data);
-	if (json.isEmpty() || json.isNull())
-	{
-		throw std::runtime_error("Invalid json data!");
-	}
-	
-	if (!json.isObject())
-	{
-		throw std::runtime_error("JSON object expected!");
-	}
-	
-	QJsonObject obj = json.object();
-	
-	const QMetaObject *meta = this->metaObject();
-	
-	for (int i = meta->propertyOffset(); i < meta->propertyCount(); i++)
-	{
-		QMetaProperty prop = meta->property(i);
-		
-		QJsonValue value;
-		if (obj.contains(prop.name()))
-		{
-			value = obj.value(prop.name());
-		}
-		else
-		{
-			continue;
-		}
-		if (value.isString())
-		{
-			prop.write(this, value.toString());
-		}
-		else if (value.isDouble())
-		{
-			prop.write(this, value.toDouble());
-		}
-		else if (value.isBool())
-		{
-			prop.write(this, value.toBool());
-		}
-		else if (value.isArray() || value.isNull() || value.isObject() || value.isUndefined())
-		{
-			continue;
-		}
-		else
-		{
-			prop.write(this, value.toInt());
-		}
-	}
+	fromJson(this->metaObject(), data);
 }
 
 QByteArray ISerializable::toByteArray(const QJsonObject &object)
 {
 	QJsonDocument json(object);
-	return json.toJson(QJsonDocument::Compact);
+	return json.toJson(/*QJsonDocument::Compact*/);
+}
+
+QObject *ISerializable::fromJson(const QMetaObject *meta, QByteArray &data)
+{
+	LOG_TRACE;
+	
+	QJsonParseError err;
+	QJsonDocument json = QJsonDocument::fromJson(data, &err);
+	if (err.error != QJsonParseError::NoError)
+	{
+		throw std::runtime_error(QString("Json parsing error! ").append(err.errorString()).toStdString());
+	}
+	if (!json.isObject())
+	{
+		throw std::runtime_error("Wrong JSON format");
+	}
+	auto jsonObject = json.object();
+    return fromJson(meta, jsonObject, this);
+}
+
+QObject *ISerializable::fromJson(const QMetaObject *meta, QJsonObject &jsonObject, QObject *object)
+{
+	LOG_TRACE;
+	if (!object)
+	{
+		object = meta->newInstance();
+	}
+	
+    for (int i = meta->propertyOffset(); i < meta->propertyCount(); ++i) 
+	{
+        QMetaProperty property = meta->property(i);
+        if (!property.isWritable() || !jsonObject.contains(property.name()))
+		{
+			continue;
+		}
+		
+        auto value = jsonValueToProperty(object, property, jsonObject.value(property.name()));
+        property.write(object, value);
+    }
+    return object;
+
+}
+
+QVariant ISerializable::jsonValueToProperty(QObject *object, QMetaProperty &property, QJsonValue value)
+{
+	Q_UNUSED(object);
+	LOG_TRACE << QString(property.typeName());
+	int type = property.userType();
+	type = QMetaType::type(property.typeName());
+    if (value.isArray()) 
+	{
+		QJsonArray arr = value.toArray();
+		QVariantList list;
+        for (int i = 0; i < arr.count(); i++)
+		{
+			QJsonValue arrVal = arr.at(i);
+			if (arrVal.isObject())
+			{
+				type = QMetaType::type(arrVal.toObject()["classname"].toString().toUtf8().constData());
+				if (type == QMetaType::UnknownType) 
+				{
+					LOG_WARN << "Unknown type!" << arrVal.toObject()["classname"].toString().toUtf8().constData();
+					continue;
+				}
+			}
+			//list << jsonValueToProperty(object, property, arr.at(i));
+		}
+		return arr;
+    } 
+	else if (value.isObject()) 
+	{
+        switch (type) 
+		{
+        default:
+            auto jsonObject = value.toObject();
+            return QVariant::fromValue(fromJson(QMetaType::metaObjectForType(type), jsonObject));
+            break;
+        }
+    } 
+	else 
+	{
+        return value.toVariant();
+    }
+	return QVariant();
 }
 
