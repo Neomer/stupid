@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 //		Database::instance().appendBlock(b);
 				
 		Block block;
-		if (Database::instance().findBlock("cb8b27eb8e633b727e446ff6a7808700afd46f1f4c7a9553bd911f2da3abe022fb6f58b8ab544169b24463d67c8d2b6ef06f8e2804e9a9fa8567611e4bfefcab", &block))
+		if (Database::instance().findBlock("3fc82356408d5ef4397994a3216535df4d46d0c62f33f65addf9497f25cc5645c8b82fd90f53e382cc23979f261d7344809fb7c5c3848b95ab4e64a863d8bc9f", &block))
 		{
 			block.printBlockInfo();
 		}

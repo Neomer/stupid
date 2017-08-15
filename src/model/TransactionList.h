@@ -23,7 +23,5 @@ private:
 
 typedef TransactionList *	TransactionListPtr;
 
-Q_DECLARE_METATYPE(TransactionList)
-Q_DECLARE_METATYPE(TransactionListPtr)
 
 #endif // TRANSACTIONLIST_H

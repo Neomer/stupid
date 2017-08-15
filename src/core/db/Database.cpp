@@ -183,7 +183,7 @@ bool Database::findBlock(QString hash, Block* ret)
 		if (ret)
 		{
 			_file.seek(index._offset);
-			ret->deserialize(_file.read(index._length));
+			ret->deserialize(ISerializable::fromByteArray(_file.read(index._length)));
 		}
 		return true;
 	}

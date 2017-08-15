@@ -65,7 +65,4 @@ private:
 	Transaction * m_tt;
 };
 
-typedef QList<Transaction *>		TransList;
-Q_DECLARE_METATYPE(TransList)
-
 #endif // BLOCK_H

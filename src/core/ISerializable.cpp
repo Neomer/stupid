@@ -97,84 +97,97 @@ QJsonObject ISerializable::serialize()
 
 }
 
-void ISerializable::deserialize(QByteArray data)
-{
-	LOG_TRACE << data.count() << "byte(s)";
-	fromJson(this->metaObject(), data);
-}
-
-QByteArray ISerializable::toByteArray(const QJsonObject &object)
-{
-	QJsonDocument json(object);
-	return json.toJson(/*QJsonDocument::Compact*/);
-}
-
-QObject *ISerializable::fromJson(const QMetaObject *meta, QByteArray &data)
+void ISerializable::deserialize(QJsonObject data)
 {
 	LOG_TRACE;
 	
-	QJsonParseError err;
-	QJsonDocument json = QJsonDocument::fromJson(data, &err);
-	if (err.error != QJsonParseError::NoError)
-	{
-		throw std::runtime_error(QString("Json parsing error! ").append(err.errorString()).toStdString());
-	}
-	if (!json.isObject())
-	{
-		throw std::runtime_error("Wrong JSON format");
-	}
-	auto jsonObject = json.object();
-    return fromJson(meta, jsonObject, this);
-}
-
-QObject *ISerializable::fromJson(const QMetaObject *meta, QJsonObject &jsonObject, QObject *object)
-{
-	LOG_TRACE;
-	if (!object)
-	{
-		object = meta->newInstance();
-	}
+	const QMetaObject *meta = this->metaObject();
 	
-    for (int i = meta->propertyOffset(); i < meta->propertyCount(); ++i) 
+	for (int i = meta->propertyOffset(); i < meta->propertyCount(); ++i) 
 	{
         QMetaProperty property = meta->property(i);
-        if (!property.isWritable() || !jsonObject.contains(property.name()))
+        if (!property.isWritable() || !data.contains(property.name()))
 		{
 			continue;
 		}
 		
-        auto value = jsonValueToProperty(object, property, jsonObject.value(property.name()));
-        property.write(object, value);
+        auto value = jsonValueToProperty(property, data.value(property.name()));
+        property.write(this, value);
     }
-    return object;
-
 }
 
-QVariant ISerializable::jsonValueToProperty(QObject *object, QMetaProperty &property, QJsonValue value)
+QByteArray ISerializable::toByteArray(const QJsonObject &object, bool compact)
 {
-	Q_UNUSED(object);
+	LOG_TRACE;
+	QJsonDocument json(object);
+	if (compact)
+		return json.toJson(QJsonDocument::Compact);
+	else
+		return json.toJson();
+}
+
+QJsonObject ISerializable::fromByteArray(const QByteArray &data)
+{
+	LOG_TRACE;
+	QJsonParseError err;
+	QJsonDocument json = QJsonDocument::fromJson(data, &err);
+	if (err.error != QJsonParseError::NoError)
+	{
+		LOG_CRIT << err.errorString();
+		throw std::runtime_error("Json corrupted! View logs form detailed information!");
+	}
+	if (!json.isObject())
+	{
+		LOG_CRIT << "Json is not object!";
+		throw std::runtime_error("Json is not object!");
+	}
+	return json.object();
+}
+
+
+QVariant ISerializable::jsonValueToProperty(QMetaProperty &property, QJsonValue value)
+{
 	LOG_TRACE << QString(property.typeName());
 	int type = property.userType();
-	type = QMetaType::type(property.typeName());
-    if (value.isArray()) 
+
+	if (value.isArray()) 
 	{
+		QString sType = QString(property.typeName());
+		if (sType.indexOf("QList") == 0) 
+		{
+			sType = sType.mid(6, sType.length() - 7);
+		}
+		type = QMetaType::type(sType.toUtf8().constData());
+		if (type == QMetaType::UnknownType)
+		{
+			LOG_WARN << "Unregistered type" << sType;
+			return QVariant();
+		}
 		QJsonArray arr = value.toArray();
 		QVariantList list;
         for (int i = 0; i < arr.count(); i++)
 		{
+			const QMetaObject *o = QMetaType::metaObjectForType(type);
+			ISerializable *iSer = qobject_cast<ISerializable *>(o->newInstance());
+			if (!iSer)
+			{
+				LOG_CRIT << "Can't create QObject!";
+				return QVariant();
+			}
+			
 			QJsonValue arrVal = arr.at(i);
 			if (arrVal.isObject())
 			{
-				type = QMetaType::type(arrVal.toObject()["classname"].toString().toUtf8().constData());
+				iSer->deserialize(arrVal.toObject());
 				if (type == QMetaType::UnknownType) 
 				{
 					LOG_WARN << "Unknown type!" << arrVal.toObject()["classname"].toString().toUtf8().constData();
 					continue;
 				}
+				list << QVariant::fromValue(iSer);
 			}
-			//list << jsonValueToProperty(object, property, arr.at(i));
 		}
-		return arr;
+		return list;
     } 
 	else if (value.isObject()) 
 	{

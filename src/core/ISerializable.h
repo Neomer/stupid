@@ -11,14 +11,15 @@ public:
 	explicit ISerializable(QObject *parent = 0);
 	
 	QJsonObject serialize();
-	void deserialize(QByteArray data);
+	void deserialize(QJsonObject data);
 	
-	static QByteArray toByteArray(const QJsonObject &object);
+	static QByteArray toByteArray(const QJsonObject &object, bool compact = true);
+	static QJsonObject fromByteArray(const QByteArray &data);
 	
 private:
 	QObject *fromJson(const QMetaObject *meta, QByteArray& data);
-	QObject *fromJson(const QMetaObject* meta, QJsonObject& jsonObject, QObject *object = 0);
-	QVariant jsonValueToProperty(QObject* object, QMetaProperty& property, QJsonValue value);
+	QObject *fromJson(QJsonObject& jsonObject);
+	QVariant jsonValueToProperty(QMetaProperty& property, QJsonValue value);
 };
 
 typedef QList<int>		QIntList;
