@@ -29,7 +29,9 @@ SOURCES += main.cpp \
     src/core/ISerializable.cpp \
     src/model/TransactionList.cpp \
     src/core/db/IDatabaseIndex.cpp \
-    src/core/db/DatabaseBlockIndex.cpp
+    src/core/db/DatabaseBlockIndex.cpp \
+    src/model/Test.cpp \
+    src/model/TestList.cpp
 
 HEADERS += \
     src/model/Node.h \
@@ -54,7 +56,9 @@ HEADERS += \
     src/core/ISerializable.h \
     src/model/TransactionList.h \
     src/core/db/IDatabaseIndex.h \
-    src/core/db/DatabaseBlockIndex.h
+    src/core/db/DatabaseBlockIndex.h \
+    src/model/Test.h \
+    src/model/TestList.h
 
 INCLUDEPATH += $$PWD
 

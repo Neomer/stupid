@@ -106,13 +106,17 @@ void ISerializable::deserialize(QJsonObject data)
 	for (int i = meta->propertyOffset(); i < meta->propertyCount(); ++i) 
 	{
         QMetaProperty property = meta->property(i);
+		LOG_DEBUG << property.name() << property.typeName();
         if (!property.isWritable() || !data.contains(property.name()))
 		{
 			continue;
 		}
 		
-        auto value = jsonValueToProperty(property, data.value(property.name()));
-        property.write(this, value);
+        QVariant value = jsonValueToProperty(property, data.value(property.name()));
+        if (!property.write(this, value))
+		{
+			LOG_CRIT << "Property value writing failed!";
+		}
     }
 }
 
@@ -158,6 +162,7 @@ QVariant ISerializable::jsonValueToProperty(QMetaProperty &property, QJsonValue 
 			sType = sType.mid(6, sType.length() - 7);
 		}
 		type = QMetaType::type(sType.toUtf8().constData());
+		LOG_DEBUG << sType << type;
 		if (type == QMetaType::UnknownType)
 		{
 			LOG_WARN << "Unregistered type" << sType;
@@ -168,6 +173,11 @@ QVariant ISerializable::jsonValueToProperty(QMetaProperty &property, QJsonValue 
         for (int i = 0; i < arr.count(); i++)
 		{
 			const QMetaObject *o = QMetaType::metaObjectForType(type);
+			if (!o)
+			{
+				LOG_CRIT << "Meta type" << sType << "is not registered!";
+				return QVariant();
+			}
 			ISerializable *iSer = qobject_cast<ISerializable *>(o->newInstance());
 			if (!iSer)
 			{
@@ -191,13 +201,21 @@ QVariant ISerializable::jsonValueToProperty(QMetaProperty &property, QJsonValue 
     } 
 	else if (value.isObject()) 
 	{
-        switch (type) 
+		QJsonObject jsonObject = value.toObject();
+		const QMetaObject *o = QMetaType::metaObjectForType(type);
+		if (!o)
 		{
-        default:
-            auto jsonObject = value.toObject();
-            return QVariant::fromValue(fromJson(QMetaType::metaObjectForType(type), jsonObject));
-            break;
-        }
+			LOG_CRIT << "Meta type is not registered!";
+			return QVariant();
+		}
+		ISerializable *iSer = qobject_cast<ISerializable *>(o->newInstance());
+		if (!iSer)
+		{
+			LOG_CRIT << "Can't create QObject!";
+			return QVariant();
+		}
+		iSer->deserialize(jsonObject);
+		return QVariant::fromValue(iSer);
     } 
 	else 
 	{

@@ -2,6 +2,8 @@
 #include <QDir>
 #include <stdio.h>
 #include <iostream>
+#include <QMetaProperty>
+#include <QVariantList>
 
 #include <cryptopp/base64.h>
 
@@ -12,6 +14,9 @@
 #include <src/model/Node.h>
 #include <src/viewmodel/NodeSpotter.h>
 #include <src/core/db/Database.h>
+
+#include <src/model/Test.h>
+#include <src/model/TestList.h>
 
 using namespace std;
 using namespace CryptoPP;
@@ -52,6 +57,38 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 	LOG_DEBUG << "Settings ready";
+	
+	LOG_DEBUG << "Registering meta-types..";
+	qRegisterMetaType<Transaction>("Transaction");
+	qRegisterMetaType<Deal>("Deal");
+	qRegisterMetaType<Test>("Test");
+	qRegisterMetaTypeStreamOperators<QList<Test> >("TestList");
+	//qRegisterMetaTypeStreamOperators<QList<Test*> >("TestListPtr");
+	LOG_DEBUG << "Registering meta-types complete!";
+	
+	TestListint rt;
+	
+	
+	Test t;
+	LOG_DEBUG << "QList<Test>" << QMetaType::type("QList<Test>")
+			  << "QList<Test*>" << QMetaType::type("QList<Test*>");
+	QList<Test> list;
+	Test t1;
+	t1.setName("dfghfgsdf");
+	list << t1;
+	QMetaProperty prop;
+	for (int i = t.metaObject()->propertyOffset(); i < t.metaObject()->propertyCount(); ++i)
+	{
+		prop = t.metaObject()->property(i);
+		if (!strcmp(prop.name(), "listPtr"))
+			break;
+	}
+	LOG_DEBUG << prop.typeName();
+	QVariant varVal = QVariant::fromValue(list);
+	int type = QMetaType::type(prop.typeName());
+	prop.write(&t, varVal);
+	
+	//t.deseralize(ISerializable::fromByteArray(QString("{\"name\":\"tttt\",\"list\":[{\"name\":\"rtrt\"}]}").toUtf8()));	
 	
 	LOG_DEBUG << "Initializing database";
 	try {
