@@ -18,7 +18,6 @@ SOURCES += main.cpp \
     src/model/Peer.cpp \
     src/model/Account.cpp \
     src/viewmodel/AccountManager.cpp \
-    src/model/Deal.cpp \
     src/model/Transaction.cpp \
     src/viewmodel/NodeSpotter.cpp \
     src/core/db/Database.cpp \
@@ -27,11 +26,8 @@ SOURCES += main.cpp \
     src/core/db/DatabaseInfo.cpp \
     src/core/ICrypto.cpp \
     src/core/ISerializable.cpp \
-    src/model/TransactionList.cpp \
     src/core/db/IDatabaseIndex.cpp \
     src/core/db/DatabaseBlockIndex.cpp \
-    src/model/Test.cpp \
-    src/model/TestList.cpp
 
 HEADERS += \
     src/model/Node.h \
@@ -44,7 +40,6 @@ HEADERS += \
     src/model/Peer.h \
     src/model/Account.h \
     src/viewmodel/AccountManager.h \
-    src/model/Deal.h \
     src/model/Transaction.h \
     src/core/Singleton.h \
     src/viewmodel/NodeSpotter.h \
@@ -54,11 +49,9 @@ HEADERS += \
     src/core/db/DatabaseInfo.h \
     src/core/ICrypto.h \
     src/core/ISerializable.h \
-    src/model/TransactionList.h \
     src/core/db/IDatabaseIndex.h \
     src/core/db/DatabaseBlockIndex.h \
-    src/model/Test.h \
-    src/model/TestList.h
+    src/model/Transaction.h
 
 INCLUDEPATH += $$PWD
 
@@ -66,8 +59,14 @@ UI_DIR = tmp
 OBJECTS_DIR = tmp
 MOC_DIR = tmp
 
-
 #[CryptoPP libs]
-LIBS += -L/usr/lib/cryptopp-lib/cryptopp-lib -lcryptopp
-INCLUDEPATH += /usr/lib/cryptopp-lib
+unix:!macx {
+    LIBS += -L/usr/lib/cryptopp-lib/cryptopp-lib -lcryptopp
+    INCLUDEPATH += /usr/lib/cryptopp-lib
+}
+win32 {
+    LIBS += -LC:/cryptopp565/release -lcryptopp
+    INCLUDEPATH += C:/cryptopp565
+}
+
 #[/CryptopPP]

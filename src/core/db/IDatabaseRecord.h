@@ -4,6 +4,7 @@
 #include <QObject>
 
 #include <src/core/ISerializable.h>
+#include <QDateTime>
 
 class IDatabaseRecord : public ISerializable
 {

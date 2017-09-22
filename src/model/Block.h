@@ -5,7 +5,6 @@
 #include <QList>
 
 #include <src/core/db/IDatabaseRecord.h>
-#include <src/model/TransactionList.h>
 #include <src/model/Transaction.h>
 
 class Block : public ISerializable
