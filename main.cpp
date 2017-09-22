@@ -58,16 +58,8 @@ int main(int argc, char *argv[])
 	LOG_DEBUG << "Initializing database";
 	try {
 		Database::instance().open();
+	
 //		Block b;
-//		for (int i = 0; i < 10; i++)
-//		{
-//			b.setBlockNumber(i);
-//			b.setDateTime(QDateTime::currentDateTime());
-//			Database::instance().appendBlock(b);
-//		}
-		
-//		Block b;
-//		b.setTT(new Transaction());
 //		QList<Transaction *> list;
 //		Transaction t(&b);
 //		Deal d(&t);
@@ -77,10 +69,11 @@ int main(int argc, char *argv[])
 //		t.addDeal(&d);
 //		list.append(&t);
 //		b.setTransactions(list);
+//		b.setDateTime(QDateTime::currentDateTime());
 //		Database::instance().appendBlock(b);
-				
+			
 		Block block;
-		if (Database::instance().findBlock("3fc82356408d5ef4397994a3216535df4d46d0c62f33f65addf9497f25cc5645c8b82fd90f53e382cc23979f261d7344809fb7c5c3848b95ab4e64a863d8bc9f", &block))
+		if (Database::instance().findBlock("0cafe8c59c1542d9f8a5e504075f0631bf9e4b6244ffdf8ef1d5b8b5958395ffccc35e85ffc318eb933e7d6e3d910b59c5e62cef7228e540a40f615acf5a4fc7", &block))
 		{
 			block.printBlockInfo();
 		}

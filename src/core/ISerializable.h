@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QVariant>
+#include <QJsonObject>
+#include <QJsonArray>
 
 class ISerializable : public QObject
 {
@@ -11,7 +13,7 @@ public:
 	explicit ISerializable(QObject *parent = 0);
 	
 	QJsonObject serialize();
-	void deserialize(QJsonObject data);
+	virtual void deserialize(QJsonObject data);
 	
 	static QByteArray toByteArray(const QJsonObject &object, bool compact = true);
 	static QJsonObject fromByteArray(const QByteArray &data);

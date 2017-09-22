@@ -1,8 +1,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QJsonArray>
 #include <QJsonParseError>
-#include <QMetaObject>
 #include <QMetaProperty>
 #include <QMetaType>
 

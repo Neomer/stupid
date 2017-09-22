@@ -14,7 +14,32 @@ void Block::printBlockInfo()
 			 << "Number:" << this->blockNumber() << "\n"
 			 << "Hash:" << this->hash() << "\n"
 			 << "Creation time:" << this->dateTimeString() << "\n"
-			 << "Previous block:" << this->prevBlockHash();
+			 << "Previous block:" << this->prevBlockHash() << "\n"
+			 << "Transactions:" << this->transactions().count();
 }
 
 
+void Block::deserialize(QJsonObject data)
+{
+	LOG_TRACE;
+	
+	ISerializable::deserialize(data);
+	if (data.contains("transactions"))
+	{
+		QList<Transaction *> tl;
+		QJsonArray arr = data["transactions"].toArray();
+		foreach (QJsonValue val, arr)
+		{
+			if (val.isObject())
+			{
+				Transaction *v = new Transaction(this);
+				v->deserialize(val.toObject());
+				tl.append(v);
+			}
+			else
+				LOG_WARN << "Неизвестное значение!";
+			
+		}
+		setTransactions(tl);
+	}
+}

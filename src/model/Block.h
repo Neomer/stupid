@@ -15,8 +15,8 @@ class Block : public ISerializable
 	Q_PROPERTY(QList<Transaction *> transactions READ transactions WRITE setTransactions)
 	Q_PROPERTY(quint64 blockNumber READ blockNumber WRITE setBlockNumber)
 	Q_PROPERTY(QString prevBlock READ prevBlockHash WRITE setPrevBlockHash)
+	Q_PROPERTY(QDateTime dateTime READ dateTime WRITE setDateTime)
 	Q_PROPERTY(QString dateTimeString READ dateTimeString WRITE setDateTimeString)
-	Q_PROPERTY(Transaction *tt READ tt WRITE setTT)
 	
 public:
 	Q_INVOKABLE Block(Block *prev = 0, QObject *parent = 0);
@@ -43,17 +43,6 @@ public:
 	
 	void printBlockInfo();
 	
-	Transaction * tt() const
-	{
-		return m_tt;
-	}
-	
-public slots:
-	void setTT(Transaction * tt)
-	{
-		m_tt = tt;
-	}
-	
 private:
 	QString _blockHash;
 	Block *_prev;
@@ -61,7 +50,9 @@ private:
 	QList<Transaction *> _transactions;
 	quint64 _blockNumber;
 	QDateTime _dateTime;
-	Transaction * m_tt;
+	
+public:
+	void deserialize(QJsonObject data);
 };
 
 #endif // BLOCK_H
